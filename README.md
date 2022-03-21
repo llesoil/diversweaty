@@ -2,15 +2,17 @@
 
 The original logo :
 
-<img width="500" src="./logos/diverse_border.svg">
+<img width="300" src="./logos/diverse_border.svg">
 
-Here comes the variants!
+Here come the variants!
 
-<img width="300" src="./logos/full1.svg">
-<img width="300" src="./logos/mini1.svg">
-<img width="300" src="./logos/standard1.svg">
-<img width="300" src="./logos/standard2.svg">
-<img width="300" src="./logos/scattered1.svg">
+<p float="left">
+<img width="300" src="./logos/mini2.svg"/>
+<img width="300" src="./logos/standard4.svg"/>
+<img width="300" src="./logos/full3.svg"/>
+<img width="300" src="./logos/scattered1.svg"/>
+<img width="300" src="./logos/standard2.svg"/>
+</p>
 
 Code in Main.ipynb
 
