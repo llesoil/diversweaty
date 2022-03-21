@@ -146,7 +146,7 @@ def standard(d, ini_angle=310, color_angle=0, color = "diverse", level_max = 5, 
                         # if the conditions are not respected, it is the end of the section
                         # and we go to the next section
                         end_section = True
-                        
+
 def mini(d, ini_angle=310, color_angle = 0, color = "diverse", decrease_range_ratio=0.9, level_max = 5):
     # same principle, but without cutting (too much) the angle between the different levels 
     start_angle = ini_angle
@@ -160,25 +160,26 @@ def mini(d, ini_angle=310, color_angle = 0, color = "diverse", decrease_range_ra
     for level in range(2, level_max+1):
         positions[level] = []
         for i in range(1, len(positions[level-1])):
-            s = positions[level-1][i-1]
-            if s not in positions[level]:
-                positions[level].append(s)
+            start_angle = positions[level-1][i-1]
+            if start_angle not in positions[level]:
+                positions[level].append(start_angle)
             min_angle = positions[level-1][i]
             start_range = int((start_angle-min_angle)/4)
             start_range_variation = 1+int((start_angle-min_angle)/20)
             end_section = False
             angle_current_section = None
-            while s > min_angle and not end_section:
+            while start_angle > min_angle and not end_section:
                 if not angle_current_section:
                     angle_current_section = int(np.random.uniform(start_range-start_range_variation,
                                                                   start_range+start_range_variation))
                 else:
                     angle_current_section = max(2, int(decrease_range_ratio*angle_current_section))
-                if s-angle_current_section-1.5> min_angle:
+                if start_angle-angle_current_section-1.5> min_angle:
                     add_section(d, ini_angle+color_angle,
-                                level = level, start_angle = s-angle_current_section, final_angle=s)
-                    s=s - angle_current_section-1.5
-                    positions[level].append(s)
+                                level = level, start_angle = start_angle-angle_current_section,
+                                final_angle=start_angle)
+                    start_angle=start_angle - angle_current_section-1.5
+                    positions[level].append(start_angle)
                 else:
                     end_section = True
 
@@ -211,15 +212,15 @@ def scattered(d, ini_angle=310, color_angle=0, color = "diverse", section_factor
     for level in range(2, level_max+1):
         positions[level] = []
         for index_pos in range(1, len(positions[level-1])):
-            s = positions[level-1][index_pos-1]
+            start_angle = positions[level-1][index_pos-1]
             min_angle = positions[level-1][index_pos]
-            if s not in positions[level]:
-                positions[level].append(s)
+            if start_angle not in positions[level]:
+                positions[level].append(start_angle)
             start_range = int((start_angle-min_angle)/section_factor)
             start_range_variation = 1+int((start_angle-min_angle)/20)
             if np.abs(start_angle-min_angle) > 2:
                 angle_current_section = None
-                while s > min_angle:
+                while start_angle > min_angle:
                     if not angle_current_section:
                         angle_current_section = int(np.random.uniform(start_range-start_range_variation,
                                                                       start_range+start_range_variation))
@@ -228,17 +229,17 @@ def scattered(d, ini_angle=310, color_angle=0, color = "diverse", section_factor
                         if np.random.uniform(0,1)>proba:
                             add_section(d, ini_angle+color_angle,
                                         level = level, 
-                                        start_angle = s-angle_current_section, 
-                                        final_angle = s)
-                        s = s-angle_current_section-3
+                                        start_angle = start_angle-angle_current_section, 
+                                        final_angle = start_angle)
+                        start_angle = start_angle-angle_current_section-3
                     else:
                         if np.random.uniform(0,1)>proba:
-                            if np.abs(s-min_angle) > 5:
+                            if np.abs(start_angle-min_angle) > 5:
                                 add_section(d, ini_angle+color_angle,
                                             level = level, 
                                             start_angle = min_angle+2, 
-                                            final_angle = s)
-                        s = min_angle
+                                            final_angle = start_angle)
+                        start_angle = min_angle
                     positions[level].append(s)
 
 def mono_direction(d, ini_angle=310, color_angle=0, color = "diverse", level_max = 5,
