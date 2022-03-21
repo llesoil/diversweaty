@@ -225,7 +225,7 @@ def scattered(d, ini_angle=310, color_angle=0, color = "diverse", section_factor
                         angle_current_section = int(np.random.uniform(start_range-start_range_variation,
                                                                       start_range+start_range_variation))
 
-                    if s-angle_current_section > min_angle and angle_current_section>3:
+                    if start_angle-angle_current_section > min_angle and angle_current_section>3:
                         if np.random.uniform(0,1)>proba:
                             add_section(d, ini_angle+color_angle,
                                         level = level, 
@@ -240,7 +240,7 @@ def scattered(d, ini_angle=310, color_angle=0, color = "diverse", section_factor
                                             start_angle = min_angle+2, 
                                             final_angle = start_angle)
                         start_angle = min_angle
-                    positions[level].append(s)
+                    positions[level].append(start_angle)
 
 def mono_direction(d, ini_angle=310, color_angle=0, color = "diverse", level_max = 5,
                    decrease_range_ratio=0.9, sym = False, 
