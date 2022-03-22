@@ -15,6 +15,6 @@ Here come the variants!
 <img width="300" src="./logos/monodir2.svg"/>
 </p>
 
-Code in Main.ipynb
+Code in Main.ipynb, source in common.py
 
-Actionable notebook in Google Colab : to link
+Actionable notebook in Google Colab : [Lien](https://colab.research.google.com/drive/1R_O9AeTFN9CQeNsJtPHL_zUpZOTfjd3G?usp=sharing)
