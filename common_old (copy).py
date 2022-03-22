@@ -27,7 +27,8 @@ def color_gradient(prop, nb_col_component=nb_part):
         col2 = colors[0]
     prop = prop*nb_col_component-k
     return rgb_to_hex(tuple([int(prop*col2[i]+(1-prop)*col1[i]) for i in range(len(col1))]))
-def add_section(ini_angle, color = "diverse", level = 1, stroke_width = 0.07, 
+
+def add_section(d, ini_angle, color = "diverse", level = 1, stroke_width = 0.07, 
                 start_angle = -50, final_angle = None):
     # inputs:
     ## level the "level" of the circle i.e. far from the center? 
@@ -40,7 +41,6 @@ def add_section(ini_angle, color = "diverse", level = 1, stroke_width = 0.07,
     ### -> 180 = abcissa + negative
     ### -> 270 = ordered + negative
     ## final_angle of the other border of the section
-    global group, shapes
     
     if not final_angle:
         final_angle = start_angle + 358
@@ -65,12 +65,9 @@ def add_section(ini_angle, color = "diverse", level = 1, stroke_width = 0.07,
     p.arc(0, 0, 2+(level-1)*(1+margin), final_angle, start_angle, cw=True, includeL=True)
     # to "close" the section, draw the rest of the path
     p.Z()
-    group.append(p)
-    r = (1.5+(level-1)*(1+margin))
-    theta = ((start_angle+final_angle)/2+360)%360*np.pi/180
-    shapes.append((r*np.cos(theta), r*np.sin(theta) , p))
+    d.append(p)
 
-def standard(ini_angle=310, color_angle=0, color = "diverse", level_max = 5, decrease_range_ratio=0.9):
+def standard(d, ini_angle=310, color_angle=0, color = "diverse", level_max = 5, decrease_range_ratio=0.9):
     # inputs
     ## ini_angle the location of the first break on the first level
     ## color_angle : since the gradient of colors is computed based on ini_angle
@@ -95,10 +92,10 @@ def standard(ini_angle=310, color_angle=0, color = "diverse", level_max = 5, dec
     start_angle = ini_angle
     # for diverse we keep the first level in red
     if color == "diverse":
-        add_section(ini_angle,
+        add_section(d, ini_angle,
                     color = "red", level = 1, start_angle = start_angle)
     else:
-        add_section(ini_angle, color = color, level = 1, start_angle = start_angle)
+        add_section(d, ini_angle, color = color, level = 1, start_angle = start_angle)
     positions[1] = [start_angle, start_angle-359]
     
     # draw levels 2 to level max
@@ -135,7 +132,7 @@ def standard(ini_angle=310, color_angle=0, color = "diverse", level_max = 5, dec
                     # if we can continue drawing 
                     if start_angle-angle_current_section-1.5> min_angle:
                         # we add a section
-                        add_section(ini_angle+color_angle,
+                        add_section(d, ini_angle+color_angle,
                                     color = color,
                                     level = level, 
                                     start_angle = start_angle-angle_current_section, 
@@ -150,16 +147,16 @@ def standard(ini_angle=310, color_angle=0, color = "diverse", level_max = 5, dec
                         # and we go to the next section
                         end_section = True
 
-def mini(ini_angle=310, color_angle = 0, color = "diverse", 
+def mini(d, ini_angle=310, color_angle = 0, color = "diverse", 
                decrease_range_ratio=0.9, level_max = 5, proba = 0.8):
     # same principle, but without cutting (too much) the angle between the different levels 
     start_angle = ini_angle
     positions = dict()
     if color == "diverse":
-        add_section(ini_angle,
+        add_section(d, ini_angle,
                     color = "red", level = 1, start_angle = start_angle)
     else:
-        add_section(ini_angle, color = color, level = 1, start_angle = start_angle)
+        add_section(d, ini_angle, color = color, level = 1, start_angle = start_angle)
     positions[1] = [start_angle, start_angle-359]
     for level in range(2, level_max+1):
         positions[level] = []
@@ -182,7 +179,7 @@ def mini(ini_angle=310, color_angle = 0, color = "diverse",
                 if start_angle-angle_current_section-1.5> min_angle:
                     if np.random.uniform(0,1)> proba:
                         if angle_current_section > 5:
-                            add_section(ini_angle+color_angle,
+                            add_section(d, ini_angle+color_angle,
                                         level = level, 
                                         start_angle = start_angle-angle_current_section,
                                         final_angle=start_angle)
@@ -193,7 +190,7 @@ def mini(ini_angle=310, color_angle = 0, color = "diverse",
                 else:
                     end_section = True
 
-def scattered(ini_angle=310, color_angle=0, color = "diverse", section_factor = 10, 
+def scattered(d, ini_angle=310, color_angle=0, color = "diverse", section_factor = 10, 
               level_max = 5, proba = 0.8, side = 'both'):
     # the idea is to fill all the circle 
     # and then to remove randomly some section in the middle
@@ -207,9 +204,10 @@ def scattered(ini_angle=310, color_angle=0, color = "diverse", section_factor = 
     positions = dict()
     ## level 1
     if color == "diverse":
-        add_section(ini_angle, color = "red", level = 1, start_angle = start_angle)
+        add_section(d, ini_angle,
+                    color = "red", level = 1, start_angle = start_angle)
     else:
-        add_section(ini_angle, color = color, level = 1, start_angle = start_angle)
+        add_section(d, ini_angle, color = color, level = 1, start_angle = start_angle)
     if side =='left':
         positions[1] = [start_angle, start_angle-179]
     elif side == 'right':
@@ -234,7 +232,7 @@ def scattered(ini_angle=310, color_angle=0, color = "diverse", section_factor = 
 
                     if start_angle-angle_current_section > min_angle and angle_current_section>3:
                         if np.random.uniform(0,1)>proba:
-                            add_section(ini_angle+color_angle,
+                            add_section(d, ini_angle+color_angle,
                                         level = level, 
                                         start_angle = start_angle-angle_current_section, 
                                         final_angle = start_angle)
@@ -242,14 +240,14 @@ def scattered(ini_angle=310, color_angle=0, color = "diverse", section_factor = 
                     else:
                         if np.random.uniform(0,1)>proba:
                             if np.abs(start_angle-min_angle) > 5:
-                                add_section(ini_angle+color_angle,
+                                add_section(d, ini_angle+color_angle,
                                             level = level, 
                                             start_angle = min_angle+2, 
                                             final_angle = start_angle)
                         start_angle = min_angle
                     positions[level].append(start_angle)
 
-def mono_direction(ini_angle=310, color_angle=0, color = "diverse", level_max = 5,
+def mono_direction(d, ini_angle=310, color_angle=0, color = "diverse", level_max = 5,
                    decrease_range_ratio=0.9, sym = False, 
                    min_average_size = 60, max_average_size = 90):
     # the idea is to draw in one direction, but not on the other part of the graph
@@ -264,21 +262,21 @@ def mono_direction(ini_angle=310, color_angle=0, color = "diverse", level_max = 
     positions = dict()
     ## level 1
     if color == "diverse":
-        add_section(ini_angle,
+        add_section(d, ini_angle,
                     color = "red", level = 1, start_angle = start_angle)
     else:
-        add_section(ini_angle, color = color, level = 1, start_angle = start_angle)
+        add_section(d, ini_angle, color = color, level = 1, start_angle = start_angle)
     positions[1] = [start_angle, start_angle-359]
     ## level 2
     positions[2] = []
     start_angle = np.random.uniform(0, 359)
     positions[2].append(start_angle)
     angle_current_section = np.random.uniform(min_average_size, max_average_size)
-    add_section(ini_angle+color_angle, color = color, level = 2, 
+    add_section(d, ini_angle+color_angle, color = color, level = 2, 
                 start_angle = start_angle-angle_current_section, final_angle = start_angle)
     positions[2].append(start_angle-angle_current_section)
     if sym:
-        add_section(ini_angle+color_angle, color = color, level = 2, 
+        add_section(d, ini_angle+color_angle, color = color, level = 2, 
             start_angle = 180+start_angle-angle_current_section, final_angle = 180+start_angle)
     
     ## level 3
@@ -301,24 +299,24 @@ def mono_direction(ini_angle=310, color_angle=0, color = "diverse", level_max = 
                     else:
                         angle_current_section = max(2, int(decrease_range_ratio*angle_current_section))
                     if start_angle-angle_current_section-1.5> min_angle:
-                        add_section(ini_angle+color_angle,
+                        add_section(d, ini_angle+color_angle,
                                     color = color,
                                     level = level, 
                                     start_angle = start_angle-angle_current_section, 
                                     final_angle = start_angle)
                         if sym:
-                            add_section(ini_angle+color_angle, color = color, level = level, 
+                            add_section(d, ini_angle+color_angle, color = color, level = level, 
                                         start_angle = 180+start_angle-angle_current_section, 
                                         final_angle = 180+start_angle)
                         start_angle=start_angle - angle_current_section-1.5
                         positions[level].append(start_angle)
                     else:
                         if np.abs(start_angle-min_angle) > 5:
-                            add_section(ini_angle+color_angle, color = color, level = level, 
+                            add_section(d, ini_angle+color_angle, color = color, level = level, 
                                             start_angle = min_angle, 
                                             final_angle = start_angle)
                             if sym:
-                                add_section(ini_angle+color_angle, color = color, level = level, 
+                                add_section(d, ini_angle+color_angle, color = color, level = level, 
                                             start_angle = 180+min_angle, 
                                             final_angle = 180+start_angle)
                             positions[level].append(min_angle)
